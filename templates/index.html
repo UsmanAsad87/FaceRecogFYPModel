@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% block title %}
+Face
+{% endblock title %}
+{% block body %}
+
+<style>
+  .firstheading {
+    height: 950px;
+    width: 100%;
+    background-image: url(/static/FaceRT1.jpg);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: absolute;
+  }
+
+  .heading {
+    color: white;
+    font-size: 60px;
+    font-family: "Century Gothic sans-serif";
+    padding-left: 380px;
+    margin-top: 100px;
+  }
+
+  .footer {
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-image: url(/static/FaceRT2.jpg);
+    color: white;
+    text-align: center;
+    padding-top: 15px;
+    height: 50px;
+  }
+
+  th,
+  td {
+    padding: 30px;
+  }
+
+  /* .container{
+    background-color: lightgrey;
+  width: 300px;
+  border: 15px solid green;
+  padding: 50px;
+  margin: 20px;
+   }
+    */
+</style>
+
+<section>
+  <div class="firstheading">
+    <a class="navbar-brand" href="/"><img src="/static/FaceRT.png" width="150" height="150"></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="heading">
+      </br>
+
+      <b>FaceRT </b>
+    </div>
+
+
+    <div style="font-family: Century Gothic, sans-serif;
+font-size: 35px; 
+padding-left:200px;
+color:white ">
+      <i>A Smart app that tracks your location</i>
+    </div>
+
+    <!-- <div >
+  <img src="../static/FaceRT5.gif" style=" width:100px; height:100px">
+</div> -->
+
+
+  </div>
+</section>
+
+</br> </br> </br>
+
+<div style=" color:rgb(2,39,68); font-family:Century Gothic, sans-serif;">
+  <h1 style="font-weight:bold; font-size: 50px;padding-left: 600px;">
+    Data log of Enteries
+  </h1>
+</div>
+<div>
+  <hr style="border:2px solid rgb(113,47,34) ;width: 250px; margin-left: 700px; margin-top: 30px;">
+  </hr>
+</div>
+
+</br>
+
+<div style="float:left; width:35%;margin-left: 450px;margin-bottom: 60px; margin-top: 10px;">
+  <div>
+    <form class="row g-3" action="/" method="POST">
+      <div class="col-auto">
+        <input type="text" class="form-control" id="name" name="name" value="" placeholder="Search name"
+          style="width:320px;">
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-dark">Search Name</button>
+
+      </div>
+    </form>
+  </div>
+  </br>
+  <div>
+    <form class="row g-3" action="/" method="POST" enctype="multipart/form-data">
+      <div class="col-auto">
+        <input type="file" class="form-control" name="newcomer" id="newcomer" accept="image" /><br>
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-dark">Search Image</button>
+      </div>
+    </form>
+  </div>
+  <div class="row g-3">
+    <div class="col-3">
+      <form action="/">
+        <button type="submit" style="width: 100%;" class="btn btn-primary">Refresh</button>
+      </form>
+    </div>
+    <div class="col-3">
+      <form action="/add_person">
+        <button type="submit" style="width: 100%;" class="btn btn-secondary">Add Person</button>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<!-- <div style="margin-top:px 10;">
+  <form action="/">
+    <button type="submit" class="btn btn-dark">Refresh</button>
+  </form>
+
+</div>
+
+<div style="margin-top:30px ;">
+  <form action="/add_person">
+    <button type="submit" class="btn btn-dark">Add Person</button>
+  </form>
+</div> -->
+</br>
+
+<!-- <div class="container"> -->
+<div class="container my-3">
+  {% if allTodo|length==0 %}
+  <div class="alert alert-dark" role="alert">
+    No Records found.
+  </div>
+  {% else %}
+  <table class="table my-3"
+    style="border:1px white solid; border-radius:40px;border-bottom: 1px solid #ddd;background-color:rgb(242, 252, 255);">
+    <thead style="color:rgb(6, 47, 78);">
+      <tr>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+      </tr>
+      <tr style="padding: 20px ;">
+        <th scope="col"></th>
+        <th scope="col">SNo</th>
+        <th scope="col">IMG</th>
+        <th scope="col">Name</th>
+        <!-- <th scope="col">ID</th> -->
+        <th scope="col">Recent Time</th>
+        <th scope="col">Recent Location</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for todo in allTodo %}
+      <tr>
+        <td></td>
+        <th scope="row">{{loop.index}}</th>
+        {% set testing = todo.imgUrl %}
+        <td><img src="{{ testing }}" id="img" alt="Red dot" width="100" height="100" /></td>
+        <td>{{todo.name}}</td>
+        <td>{{todo.recentTime}}</td>
+        <td>{{todo.recentLocation}}</td>
+        <td>
+          <a href="/details/{{todo.id}}" type="button" class="btn btn-outline-dark btn-sm mx-1">Show Details</button>
+            <a href="/update/{{todo.id}}" type="button" class="btn btn-outline-dark btn-sm mx-1">Update</button>
+              <a href="/delete/{{todo.id}}" type="button" class="btn btn-outline-dark btn-sm mx-1">Delete</button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
+
+  {% endif %}
+
+
+  </br></br>
+
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<div class="footer">
+  Copy rights reserved
+</div>
+{% endblock body %}

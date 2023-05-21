@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}
+Update
+{% endblock title %}
+{% block body %}
+
+<style>
+  .footer {
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-image: url(/static/FaceRT2.jpg);
+    color: white;
+    text-align: center;
+    padding-top: 15px;
+    height: 50px;
+    margin-top: 340px;
+  }
+
+  .header {
+    height: 100px;
+    width: 100%;
+    background-image: url(/static/FaceRT3.jpg);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: absolute;
+  }
+</style>
+
+<div class="header">
+</div>
+<a href="/" class="btn btn-primary" style="margin-left: 20px; margin-top: 10px; background-color: gray; color: white;">Back to Home</a>
+
+
+<div class="container my-3" style="color:rgb(2,39,68); font-family:Century Gothic, sans-serif;">
+  <h1 style="font-weight:bold; font-size: 50px; padding-left: 450px; margin-top:60px;">
+    Update
+  </h1>
+
+  <div>
+    <hr style="border:2px solid rgb(113,47,34) ;width: 100px; margin-left: 500px; margin-top: 30px;">
+    </hr>
+  </div>
+
+  </br>
+  </br>
+
+
+  {% if alert_message %}
+  <div class="alert alert-danger" style=" width: 70%;margin-left: 200px;"role="alert">
+    {{ alert_message }}
+  </div>
+  {% endif %}
+  
+  {% if success_message %}
+  <div class="alert alert-success" role="alert">
+    {{ success_message }}
+  </div>
+  {% endif %}
+
+  <div style="background-color:rgb(242, 252, 255); padding: 20px;">
+    <div style="width: 50%;float: left; margin-left:200px;">
+      </br>
+      <br />
+      <br />
+      <h5>ID: {{user.id}}</h5>
+      <h5>Name: {{user.name}}</h5>
+      <h5>Recent Location: {{user.recentLocation}}</h5>
+      <h5>Recent Time: {{user.recentTime}}</h5>
+    </div>
+    <div>
+      <br />
+      <br />
+      {% set testing = user.imgUrl %}
+      <img src="{{ testing }}" style="border: 5px solid #0a449b;" id="img2" alt="Red dot" width="200" height="200" />
+    </div>
+
+    <div>
+      <br />
+      <form style="background-color:rgb(242, 252, 255);" class="row g-3"
+        action="/update/{{user.id}}" method="POST" enctype="multipart/form-data">
+        <div class="col-auto " style="padding-left: 200px;">
+          <input type="text" class="form-control" id="name" name="name" value="" placeholder="Type name ..."
+            style="width:320px;">
+          <br />
+          <button type="submit" style="width: 100%;"class="btn btn-dark">Update Name</button>
+        </div>
+      </form>
+    </div>
+
+    <br/>
+    <br/>
+
+
+  </div>
+
+
+
+
+</div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<div class="footer">
+  Copy rights reserved
+</div>
+{% endblock body %}
