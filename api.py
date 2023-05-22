@@ -1,13 +1,11 @@
 import shutil
 import warnings
 from api_helper.helper_func import extract_face, loadBase64Img
-
 from api_helper.mongoDbFunc import addTimeStampOfUser, getAllUser, resetMongoDb
 from api_helper.search_person import searchByImg, searchByName
 
 
 warnings.filterwarnings("ignore")
-#new push
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -468,7 +466,7 @@ if __name__ == '__main__':
 
 	#app.run(host='0.0.0.0', port=80,debug=False)
 	# app.run(host='0.0.0.0', port=args.port,debug=True,threaded=True)
-	app.run(host='192.168.0.106', port=5000,debug=False)
+	app.run(host='10.25.28.172', port=5000,debug=False)  #'192.168.0.106' home
 	# app.run(host='0.0.0.0', port=args.port,debug=True)
 
 	# app.run( port=args.port,debug=True)

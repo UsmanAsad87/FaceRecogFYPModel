@@ -1,4 +1,4 @@
-from deepface.detectors import OpenCvWrapper, SsdWrapper, DlibWrapper, MtcnnWrapper, RetinaFaceWrapper,MediapipeWrapper
+from deepface.detectors import MtcnnWrapper, RetinaFaceWrapper
 from PIL import Image
 import math
 import numpy as np
@@ -9,12 +9,8 @@ def build_model(detector_backend):
     global face_detector_obj #singleton design pattern
 
     backends = {
-        'opencv': OpenCvWrapper.build_model,
-        'ssd': SsdWrapper.build_model,
-        'dlib': DlibWrapper.build_model,
         'mtcnn': MtcnnWrapper.build_model,
         'retinaface': RetinaFaceWrapper.build_model,
-	'mediapipe': MediapipeWrapper.build_model
     }
 
     if not "face_detector_obj" in globals():
@@ -47,12 +43,8 @@ def detect_face(face_detector, detector_backend, img, align = True):
 def detect_faces(face_detector, detector_backend, img, align = True):
 
     backends = {
-        'opencv': OpenCvWrapper.detect_face,
-        'ssd': SsdWrapper.detect_face,
-        'dlib': DlibWrapper.detect_face,
         'mtcnn': MtcnnWrapper.detect_face,
         'retinaface': RetinaFaceWrapper.detect_face,
-	'mediapipe': MediapipeWrapper.detect_face
     }
 
     detect_face = backends.get(detector_backend)
