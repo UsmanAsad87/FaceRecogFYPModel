@@ -1,6 +1,6 @@
 import base64
-from classes import TimeStamp, User
-from mongoDbFunc import getAllUser
+from api_helper.classes import TimeStamp, User
+from api_helper.mongoDbFunc import getAllUser
 from flask import Flask, jsonify, request, make_response,render_template,redirect
 import pymongo
 import pandas as pd

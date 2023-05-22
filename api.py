@@ -1,9 +1,9 @@
 import shutil
 import warnings
-from helper_func import extract_face, loadBase64Img
+from api_helper.helper_func import extract_face, loadBase64Img
 
-from mongoDbFunc import addTimeStampOfUser, getAllUser, resetMongoDb
-from search_person import searchByImg, searchByName
+from api_helper.mongoDbFunc import addTimeStampOfUser, getAllUser, resetMongoDb
+from api_helper.search_person import searchByImg, searchByName
 
 
 warnings.filterwarnings("ignore")
@@ -14,7 +14,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 #------------------------------
 
 from flask import Flask, jsonify, request, make_response,render_template,redirect
-from classes import TimeStamp, User
+from api_helper.classes import TimeStamp, User
 import argparse
 import uuid
 import json
