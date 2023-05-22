@@ -146,14 +146,16 @@ color:white ">
 </br>
 
 <!-- <div class="container"> -->
-<div class="container my-3">
+<div class="container my-3" style="margin-top:30px ;">
   {% if allTodo|length==0 %}
-  <div class="alert alert-dark" role="alert">
+  <div class="alert alert-dark" style="margin-top:200px ;"role="alert">
     No Records found.
   </div>
+  <br/>
+  <br/>
   {% else %}
-  <table class="table my-3"
-    style="border:1px white solid; border-radius:40px;border-bottom: 1px solid #ddd;background-color:rgb(242, 252, 255);">
+  
+  <table class="table my-3" style="border:1px white solid; border-radius:40px;border-bottom: 1px solid #ddd;background-color:rgb(242, 252, 255);">
     <thead style="color:rgb(6, 47, 78);">
       <tr>
         <th scope="col"></th>
@@ -169,7 +171,6 @@ color:white ">
         <th scope="col">SNo</th>
         <th scope="col">IMG</th>
         <th scope="col">Name</th>
-        <!-- <th scope="col">ID</th> -->
         <th scope="col">Recent Time</th>
         <th scope="col">Recent Location</th>
         <th scope="col">Actions</th>

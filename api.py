@@ -1,4 +1,11 @@
+import shutil
 import warnings
+from api_helper.helper_func import extract_face, loadBase64Img
+
+from api_helper.mongoDbFunc import addTimeStampOfUser, getAllUser, resetMongoDb
+from api_helper.search_person import searchByImg, searchByName
+
+
 warnings.filterwarnings("ignore")
 #new push
 import os
@@ -7,8 +14,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 #------------------------------
 
 from flask import Flask, jsonify, request, make_response,render_template,redirect
-
-
+from api_helper.classes import TimeStamp, User
 import argparse
 import uuid
 import json
@@ -24,12 +30,7 @@ import base64
 import numpy as np
 from datetime import datetime
 import uuid
-
-
-
-# from mtcnn.mtcnn import MTCNN
 import cv2
-# detector =MTCNN()
 
 
 
@@ -67,56 +68,9 @@ if gpus:
     print(e)
 
 
-
-
-class User:
-	def __init__(self, id,name,recentTime,recentLocation, timeStamps, imgUrl):
-		self.id = id
-		self.name = name
-		self.recentLocation = recentLocation
-		self.timeStamps= timeStamps
-		self.imgUrl = imgUrl
-		self.recentTime = recentTime
-
-	def __init__(self, item):
-		self.id = item['id']
-		self.name = item['name']
-		self.recentLocation ='' if "none" in item['recent_location'] else item['recent_location']
-		self.timeStamps= item['timeStamps']
-		self.imgUrl ="data:image/png;base64,"+ item["imgUrl"]
-		self.recentTime = '' if item['recent_timeStamp']==datetime.min else item['recent_timeStamp'].strftime("%m/%d/%Y, %H:%M:%S")
-
-	def __init__(self, item,stamps):
-		self.id = item['id']
-		self.name = item['name']
-		self.recentLocation ='' if "none" in item['recent_location'] else item['recent_location']
-		self.timeStamps= stamps
-		self.imgUrl ="data:image/png;base64,"+ item["imgUrl"]
-		self.recentTime = '' if item['recent_timeStamp']==datetime.min else item['recent_timeStamp'].strftime("%m/%d/%Y, %H:%M:%S")
-
-class TimeStamp:
-	def __init__(self,time,location,img):
-		self.time = time
-		self.location= location
-		self.img = img
-
-	def __init__(self, stamp):
-		self.time = stamp['time'].strftime("%m/%d/%Y, %H:%M:%S")
-		self.location= stamp['location']
-		self.img = stamp["img"]
-
-
-
-
 app = Flask(__name__)
-# app.config['MONGO_URI']="mongodb://localhost:27017/FaceRecog"
-# mongo=PyMongo(app)
-
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-
-# mydb = myclient["FaceRecog"]
 mydb = myclient["FaceRecog"]
-
 collection=mydb["Users"]
 
 #------------------------------
@@ -142,16 +96,7 @@ def view():
 
 	#If you want to get all users	
 	return getAllUser()
-	# allDocs=collection.find({}).sort('recent_timeStamp',-1)
-	# Docs=[]
-	# for item in allDocs:
-	# 	stamps=[]
-	# 	for st in item['timeStamps']:
-	# 		stamp=TimeStamp(st)
-	# 		stamps.append(stamp)
-	# 	doc=User(item,stamps)
-	# 	Docs.append(doc)
-	# return render_template('index.html',allTodo=Docs,pic=doc.imgUrl)
+
 
 @app.route('/details/<string:id>',methods=['GET','POST'])
 def details(id):
@@ -160,16 +105,15 @@ def details(id):
 	for item in user['timeStamps']:
 		stamp=TimeStamp(item)
 		stamps.append(stamp)
-		# print("DATA: "+stamp.location+" "+stamp.time+" "+stamp.img+"  ")
+
 	stamps=sorted(stamps,key= lambda x: x.time,reverse=True)
 	userData= User(user,stamps)
-	# for st in userData.timeStamps:
-	# 	print(st.time)
 	return render_template('details.html',user=userData)
 
 @app.route('/delete/<string:id>',methods=['GET','POST'])
 def delete(id):
 	save_path = 'dataset_small/' + id + '/image' + id + '.png'
+	folder_path= 'dataset_small/' + id 
 	file_name = "representations_arcface.pkl"
 	db_path = 'dataset_small'
 
@@ -188,156 +132,24 @@ def delete(id):
 		pickle.dump(representations, f)
 
 	collection.delete_one({"id":id})
-	
+
+	if os.path.exists(folder_path):
+		shutil.rmtree(folder_path)
+
 	return redirect('/')
 
 @app.route('/add_person',methods=['GET','POST'])
-def addPerson():
+def addNewPerson():
 	if request.method == 'POST':
 		newcomer = request.files.get('newcomer')
 		name = request.form.get('name')
-
 		if not newcomer or not name:
 			return render_template('add_person.html', alert_message="Please provide the image and name of person.")
 		
-		
 		return addPerson(img=newcomer,personName=name)
-		
 		
 	return render_template('add_person.html')
 
-
-@app.route('/update/<string:id>',methods=['GET','POST'])
-def update(id):
-	user=collection.find_one({"id":id})
-	stamps=[]
-	for item in user['timeStamps']:
-		stamp=TimeStamp(item)
-		stamps.append(stamp)
-	userData= User(user,stamps)
-
-	if request.method == 'POST':
-		name = request.form.get('name')
-
-		if  not name:
-			return render_template('update.html',user=userData, alert_message="Please provide updated name of person.")
-		
-		prev={"id":id}
-		nextt={"$set":{"name":name}}
-		up=collection.update_many(prev,nextt)
-		print(up.modified_count)
-		return render_template('update.html',user=userData, alert_message="Name updated successfully.")
-		
-	return render_template('update.html',user=userData)
-
-
-@app.route('/findface', methods=['POST'])
-def findface():
-
-	global graph
-
-	tic = time.time()
-	req = request.get_json()
-	trx_id = uuid.uuid4()
-
-	resp_obj = jsonify({'success': False})
-
-	if tf_version == 1:
-		with graph.as_default():
-			resp_obj = findfaceWrapper(req, trx_id)
-	elif tf_version == 2:
-		resp_obj = findfaceWrapper(req, trx_id)
-
-	#--------------------------
-
-	toc =  time.time()
-	print("TOTAL TIME:"+str(toc-tic))
-
-	resp_obj["trx_id"] = trx_id
-	resp_obj["seconds"] = toc-tic
-
-	return resp_obj, 200
-
-@app.route('/test')
-def test():
-	resp_obj = jsonify({'success': True})
-	return resp_obj, 200
-
-def getAllUser():
-	allDocs=collection.find({}).sort('recent_timeStamp',-1)
-	Docs=[]
-	for item in allDocs:
-		stamps=[]
-		for st in item['timeStamps']:
-			stamp=TimeStamp(st)
-			stamps.append(stamp)
-		doc=User(item,stamps)
-		Docs.append(doc)
-	return render_template('index.html',allTodo=Docs,pic=doc.imgUrl)
-
-def searchByImg(img):
-	if img.filename=='':
-		return getAllUser()
-
-	filename=img.filename.split(".")
-	name=filename[0]
-	ext=filename[1]
-	img_bytes = img.read()
-	encoded_string = base64.b64encode(img_bytes)
-	str_encoded_string=str(encoded_string)
-	str_encoded_string=str_encoded_string[2:]
-	instance='data:image/'+ext+';base64,'+str_encoded_string
-	instance=instance[:-1]
-	resultDf=pd.DataFrame()
-	try:
-		resultDf = DeepFace.find(instance
-		, db_path = 'dataset_small'
-		, model_name = 'ArcFace'
-		, distance_metric = 'cosine'
-		, detector_backend = 'retinaface'
-		, silent=True
-	)
-	except Exception as err:
-		resp_obj = jsonify({'success': False, 'error': str(err)}), 205
-	
-	if resultDf.empty:
-		print("Not found")
-		return render_template('index.html',allTodo=[])
-	else:
-		print(resultDf)
-		Docs=[]	
-		IDs=[]
-		for index, row in resultDf.iterrows():
-			imgurl=row['identity']
-			imgurl= imgurl.replace("\\", "/")
-			id=imgurl.split("/")[1]
-			if row["ArcFace_cosine"] < 0.56 and not id in IDs:
-				imgurl=row['identity']
-				#print(imgurl.split("/")[1] in IDs)
-				user=collection.find_one({"name":id})
-				IDs.append(id)
-				print(id)
-				#print(user==None)
-				#if no user is found then this will run
-				if(user==None):
-					print("none")
-					return render_template('index.html',allTodo=Docs)
-
-				
-				
-				stamps=[]
-				for item in user['timeStamps']:
-					stamp=TimeStamp(item)
-					stamps.append(stamp)
-
-				userData= User(user,stamps)
-				Docs.append(userData)
-
-
-
-       
-		print(Docs)
-		return render_template('index.html',allTodo=Docs)
 
 def addPerson(img,personName):
 	if img.filename=='':
@@ -390,7 +202,6 @@ def addPersonHelper(img,personName):
 	for face_img in face_imgs:
 		try:	
 			faceImg = DeepFace.detectFace(img_path = face_img, target_size=(224, 224), enforce_detection = False, detector_backend = 'retinaface', align = True)
-			count=fcount('dataset_small/')
 			count = uuid.uuid1()
 			newpath = 'dataset_small/'+str(count)  
 			if not os.path.exists(newpath):
@@ -428,76 +239,65 @@ def addPersonHelper(img,personName):
 	return render_template('add_person.html', success_message="Person added successfully.")
 
 
-def searchByName(name):
-	#if search query is empty
-	if(name==''):
-		return getAllUser()
-	
-	#if no user is found then this will run
-	user=collection.find_one({"name":name})
-	if(user==None):
-		return render_template('index.html',allTodo=[])
 
-	#if user record is found	
-	Docs=[]	
+
+@app.route('/update/<string:id>',methods=['GET','POST'])
+def update(id):
+	user=collection.find_one({"id":id})
 	stamps=[]
 	for item in user['timeStamps']:
 		stamp=TimeStamp(item)
 		stamps.append(stamp)
-		print("DATA: "+stamp.location+" "+stamp.time+"  ")
 	userData= User(user,stamps)
-	Docs.append(userData)
-	for st in userData.timeStamps:
-		print(st.time)
-	return render_template('index.html',allTodo=Docs)
+
+	if request.method == 'POST':
+		name = request.form.get('name')
+
+		if  not name:
+			return render_template('update.html',user=userData, alert_message="Please provide updated name of person.")
+		
+		prev={"id":id}
+		nextt={"$set":{"name":name}}
+		up=collection.update_many(prev,nextt)
+		print(up.modified_count)
+		return render_template('update.html',user=userData, alert_message="Name updated successfully.")
+		
+	return render_template('update.html',user=userData)
 
 
 
 
-def loadBase64Img(uri):
-   encoded_data = uri.split(',')[1]
-   nparr = np.fromstring(base64.b64decode(encoded_data), np.uint8)
-   img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-   return img
+@app.route('/findface', methods=['POST'])
+def findface():
 
-# Using Retina face
-def extract_face(image, resize=(224, 224)):
-	tic1 =  time.time()
-	detector_backend = 'retinaface'
-	face_detector = FaceDetector.build_model(detector_backend)
-	faces = FaceDetector.detect_faces(face_detector, detector_backend, image, align = False)
-	toc1 =  time.time()
-	print("Extract onlt time MTCNN:"+str(toc1-tic1))
+	global graph
 
-	facesInb64=[]
-	for face, (x, y, w, h) in faces:
-		if w > 130: #discard small detected faces
-			face_boundary = image[int(y):int(y+h), int(x):int(x+w)]
-			face_image=cv2.resize(face_boundary,resize)
-			res, frame = cv2.imencode('.jpg', face_image)   
-			b64 = base64.b64encode(frame) 
-			img = "data:image/jpeg;base64," + b64.decode('utf-8')
-			facesInb64.append(img)
+	tic = time.time()
+	req = request.get_json()
+	trx_id = uuid.uuid4()
 
-	return facesInb64
+	resp_obj = jsonify({'success': False})
 
-#///Using MTCNN
-# def extract_face(image, resize=(224, 224)):
-# 	tic1 =  time.time()
-# 	# faces = detector.detect_faces(image)
-# 	print("Extract onlt time MTCNN:"+str(toc1-tic1))
-# 	for face in faces:
-# 		x1, y1, width, height = face['box']
-# 		x2, y2 = x1 + width, y1 + height
-# 		face_boundary = image[y1:y2, x1:x2]
-# 		face_image=cv2.resize(face_boundary,resize)
+	if tf_version == 1:
+		with graph.as_default():
+			resp_obj = findfaceWrapper(req, trx_id)
+	elif tf_version == 2:
+		resp_obj = findfaceWrapper(req, trx_id)
 
-# 		res, frame = cv2.imencode('.jpg', face_image)   
-# 		b64 = base64.b64encode(frame) 
-# 		img = "data:image/jpeg;base64," + b64.decode('utf-8')
-# 		facesInb64.append(img)
+	#--------------------------
 
-# 	return facesInb64
+	toc =  time.time()
+	print("TOTAL TIME:"+str(toc-tic))
+
+	resp_obj["trx_id"] = trx_id
+	resp_obj["seconds"] = toc-tic
+
+	return resp_obj, 200
+
+@app.route('/test')
+def test():
+	resp_obj = jsonify({'success': True})
+	return resp_obj, 200
 
 def findfaceWrapper(req, trx_id = 0):
 
@@ -596,7 +396,6 @@ def findfaceWrapper(req, trx_id = 0):
 					resp_obj['HasFace']= face
 					resp_obj['face_found']= 'true'
 					faceImg = DeepFace.detectFace(img_path = face_img, target_size=(224, 224), enforce_detection = False, detector_backend = 'retinaface', align = True)
-					count=fcount('dataset_small/')
 					count = uuid.uuid1()
 					print(count)
 					newpath = 'dataset_small/'+str(count)  
@@ -653,50 +452,9 @@ def findfaceWrapper(req, trx_id = 0):
 	
 	return resp_all
 
-def fcount(path):
-    count1 = 0
-    for root, dirs, files in os.walk(path):
-            count1 += len(dirs)
-    return count1
 
-def addAllUserInDb(path):
-	dir_list = os.listdir(path)
-	for item in dir_list:
-		if os.path.isdir(os.path.join(path, item)):
-			filename=os.listdir(os.path.join(path, item))
-			imgpath=os.path.join(path, item,filename[0])
-			with open(imgpath, "rb") as img_file:
-				my_string = base64.b64encode(img_file.read())
-			rec={"name":item.split("-")[0],"id":item,"imgUrl":my_string.decode("utf-8"),"recent_timeStamp":datetime.min,'recent_location':'none',"timeStamps":[]}
-			collection.insert_one(rec)
 
-def addTimeStampOfUser(imgurl,location,img):
-	imgurl= imgurl.replace("\\", "/")
-	ID=imgurl.split("/")
-	#print(imgurl)
-	#print(ID[1])
-	print(ID[1])
-	one=collection.find_one({"id":ID[1]})
-	# print(one)
-	timeStamps=one["timeStamps"]
-	now=datetime.now()
-	#location="lab"
-	# print(now)
-	
-	timeStamp={"time":now,"location":location,'img':img}
-	timeStamps.append(timeStamp)
-	# print(timeStamp)
-	prev={"id":ID[1]}
-	nextt={"$set":{"timeStamps":timeStamps,"recent_timeStamp":now,'recent_location':location}}
-	up=collection.update_many(prev,nextt)
-	print(up.modified_count)
 
-def resetMongoDb():
-	# dictionary={"name":"usman","marks":20}
-	# collection.insert_one(dictionary)
-	collection.delete_many({})
-	addAllUserInDb('dataset_small')
-	# collection.delete_one({"name":"ID13"})
 
 if __name__ == '__main__':
 	resetMongoDb()
