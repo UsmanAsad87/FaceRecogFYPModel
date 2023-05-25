@@ -136,6 +136,31 @@ def delete(id):
 
 	return redirect('/')
 
+
+@app.route('/deleteStamp/<string:id>/<string:time>', methods=['GET', 'POST'])
+def deleteStamp(id, time):
+	print(id)
+	print(time)
+	# one=collection.find_one({"id":ID[1]})
+	# # print(one)
+	# timeStamps=one["timeStamps"]
+	# now=datetime.now()
+	# #location="lab"
+	# # print(now)
+	
+	# timeStamp={"time":now,"location":location,'img':img}
+	# timeStamps.append(timeStamp)
+	# # print(timeStamp)
+	# prev={"id":ID[1]}
+	# nextt={"$set":{"timeStamps":timeStamps,"recent_timeStamp":now,'recent_location':location}}
+	# up=collection.update_many(prev,nextt)
+	# print(up.modified_count)
+
+	# collection.delete_one({"id":id})
+
+	return redirect('/details/'+id)
+
+
 @app.route('/add_person',methods=['GET','POST'])
 def addNewPerson():
 	if request.method == 'POST':

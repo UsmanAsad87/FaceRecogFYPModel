@@ -18,7 +18,7 @@ def extract_face(image, resize=(224, 224)):
 	faces = FaceDetector.detect_faces(face_detector, detector_backend, image, align = False)
 	facesInb64=[]
 	for face, (x, y, w, h) in faces:
-		if w > 130: #discard small detected faces
+		if w > 80: #discard small detected faces
 			face_boundary = image[int(y):int(y+h), int(x):int(x+w)]
 			face_image=cv2.resize(face_boundary,resize)
 			res, frame = cv2.imencode('.jpg', face_image)   
