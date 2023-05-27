@@ -93,11 +93,11 @@ def searchByName(name):
 	for item in user['timeStamps']:
 		stamp=TimeStamp(item)
 		stamps.append(stamp)
-		print("DATA: "+stamp.location+" "+stamp.time+"  ")
+		# print("DATA: "+stamp.location+" "+stamp.time+"  ")
 	userData= User(user,stamps)
 	Docs.append(userData)
-	for st in userData.timeStamps:
-		print(st.time)
+	# for st in userData.timeStamps:
+	# 	print(st.time)
 	return render_template('index.html',allTodo=Docs)
 
 

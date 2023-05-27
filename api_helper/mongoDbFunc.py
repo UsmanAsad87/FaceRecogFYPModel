@@ -1,6 +1,7 @@
 import base64
 from datetime import datetime
 import os
+import uuid
 from api_helper.classes import TimeStamp, User
 # from api_helper.classes import TimeStamp, User
 from flask import Flask, jsonify, request, make_response,render_template,redirect
@@ -37,8 +38,9 @@ def addTimeStampOfUser(imgurl,location,img):
 	now=datetime.now()
 	#location="lab"
 	# print(now)
+	id = str(uuid.uuid1())
 	
-	timeStamp={"time":now,"location":location,'img':img}
+	timeStamp={"time":now,"location":location,'img':img,'id':id}
 	timeStamps.append(timeStamp)
 	# print(timeStamp)
 	prev={"id":ID[1]}

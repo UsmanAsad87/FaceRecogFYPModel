@@ -27,14 +27,16 @@ class User:
 		self.recentTime = '' if item['recent_timeStamp']==datetime.min else item['recent_timeStamp'].strftime("%m/%d/%Y, %H:%M:%S")
 
 class TimeStamp:
-	def __init__(self,time,location,img):
+	def __init__(self,time,location,img,id):
 		self.time = time
 		self.location= location
 		self.img = img
+		self.id=id
 
 	def __init__(self, stamp):
 		self.time = stamp['time'].strftime("%m/%d/%Y, %H:%M:%S")
 		self.location= stamp['location']
 		self.img = stamp["img"]
+		self.id = stamp["id"]
 
 
