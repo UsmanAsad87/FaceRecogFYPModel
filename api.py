@@ -357,13 +357,13 @@ def findfaceWrapper(req, trx_id = 0):
 	tic1 =  time.time()
 	img2=loadBase64Img(img)
 	path='image.png'
-	matplotlib.image.imsave(path, img2)
+	# matplotlib.image.imsave(path, img2)
 	toc1 =  time.time()
 	print("loadBase64Img TIME:"+str(toc1-tic1))
 	resp_all={}
 	
 	tic2 = time.time()
-	face_imgs=extract_face2(img2)
+	face_imgs=extract_face(img2)
 	print("no of faces = "+str(len(face_imgs)))
 	toc2 = time.time()
 	print("extract_faces TIME:"+str(toc2-tic2))
@@ -478,7 +478,7 @@ def findfaceWrapper(req, trx_id = 0):
 
 
 if __name__ == '__main__':
-	# resetMongoDb()
+	resetMongoDb()
 	parser = argparse.ArgumentParser()
 	parser.add_argument(
 		'-p', '--port',
@@ -489,8 +489,8 @@ if __name__ == '__main__':
 
 	#app.run(host='0.0.0.0', port=80,debug=False)
 	# app.run(host='0.0.0.0', port=args.port,debug=True,threaded=True)
-	app.run(host='10.25.28.60', port=5000,debug=False)  #'192.168.0.106' home
-	# app.run(host='0.0.0.0', port=args.port,debug=False,threaded=True)
+	# app.run(host='10.25.28.60', port=5000,debug=False)  #'192.168.0.106' home
+	app.run(host='0.0.0.0', port=args.port,debug=False,threaded=True)
 	# app.run(host='0.0.0.0', port=args.port,debug=True)
 
 	# app.run( port=args.port,debug=True)

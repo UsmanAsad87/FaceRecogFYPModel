@@ -19,10 +19,11 @@ def loadBase64Img(uri):
 def extract_face(image, resize=(224, 224)):
 	detector_backend = 'retinaface'
 	face_detector = FaceDetector.build_model(detector_backend)
-	faces = FaceDetector.detect_faces(face_detector, detector_backend, image, align = False)
+	faces = FaceDetector.detect_faces(face_detector, detector_backend, image, align = True)
 	facesInb64=[]
 	for face, (x, y, w, h) in faces:
-		if w > 80: #discard small detected faces
+		print("usman")
+		if w > 0: #discard small detected faces
 			face_boundary = image[int(y):int(y+h), int(x):int(x+w)]
 			face_image=cv2.resize(face_boundary,resize)
 			res, frame = cv2.imencode('.jpg', face_image)   
