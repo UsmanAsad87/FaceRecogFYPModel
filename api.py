@@ -1,6 +1,6 @@
 import shutil
 import warnings
-from api_helper.helper_func import extract_face, loadBase64Img
+from api_helper.helper_func import extract_face, extract_face2, loadBase64Img
 from api_helper.mongoDbFunc import addTimeStampOfUser, getAllUser, resetMongoDb
 from api_helper.search_person import searchByImg, searchByName
 
@@ -137,28 +137,22 @@ def delete(id):
 	return redirect('/')
 
 
-@app.route('/deleteStamp/<string:id>/<string:time>', methods=['GET', 'POST'])
-def deleteStamp(id, time):
+@app.route('/deleteStamp/<string:userId>/<string:id>', methods=['GET', 'POST'])
+def deleteStamp(userId, id):
+	print(userId)
 	print(id)
-	print(time)
-	# one=collection.find_one({"id":ID[1]})
-	# # print(one)
+	collection.update_one({"id": userId}, {"$pull": {"timeStamps": {"id": id}}})
+
+	# one=collection.find_one({"id":userId})
 	# timeStamps=one["timeStamps"]
-	# now=datetime.now()
-	# #location="lab"
-	# # print(now)
-	
-	# timeStamp={"time":now,"location":location,'img':img}
-	# timeStamps.append(timeStamp)
-	# # print(timeStamp)
-	# prev={"id":ID[1]}
-	# nextt={"$set":{"timeStamps":timeStamps,"recent_timeStamp":now,'recent_location':location}}
+	# prev={"id":userId}
+	# nextt={"$set":{"timeStamps":timeStamps}}
 	# up=collection.update_many(prev,nextt)
 	# print(up.modified_count)
 
 	# collection.delete_one({"id":id})
 
-	return redirect('/details/'+id)
+	return redirect('/details/'+userId)
 
 
 @app.route('/add_person',methods=['GET','POST'])
@@ -362,12 +356,15 @@ def findfaceWrapper(req, trx_id = 0):
 
 	tic1 =  time.time()
 	img2=loadBase64Img(img)
+	path='image.png'
+	matplotlib.image.imsave(path, img2)
 	toc1 =  time.time()
 	print("loadBase64Img TIME:"+str(toc1-tic1))
 	resp_all={}
 	
 	tic2 = time.time()
-	face_imgs=extract_face(img2)
+	face_imgs=extract_face2(img2)
+	print("no of faces = "+str(len(face_imgs)))
 	toc2 = time.time()
 	print("extract_faces TIME:"+str(toc2-tic2))
 
@@ -450,7 +447,8 @@ def findfaceWrapper(req, trx_id = 0):
 					
 					now=datetime.now()
 					#location="lab"
-					timeStamp={"time":now,"location":location,"img":face_img}
+					id = str(uuid.uuid1())
+					timeStamp={"time":now,"location":location,"img":face_img,'id':id}
 
 					with open(save_path, "rb") as img_file:
 						my_string = base64.b64encode(img_file.read())
@@ -480,7 +478,7 @@ def findfaceWrapper(req, trx_id = 0):
 
 
 if __name__ == '__main__':
-	resetMongoDb()
+	# resetMongoDb()
 	parser = argparse.ArgumentParser()
 	parser.add_argument(
 		'-p', '--port',
@@ -491,7 +489,7 @@ if __name__ == '__main__':
 
 	#app.run(host='0.0.0.0', port=80,debug=False)
 	# app.run(host='0.0.0.0', port=args.port,debug=True,threaded=True)
-	app.run(host='10.25.28.119', port=5000,debug=False)  #'192.168.0.106' home
+	app.run(host='10.25.28.60', port=5000,debug=False)  #'192.168.0.106' home
 	# app.run(host='0.0.0.0', port=args.port,debug=False,threaded=True)
 	# app.run(host='0.0.0.0', port=args.port,debug=True)
 

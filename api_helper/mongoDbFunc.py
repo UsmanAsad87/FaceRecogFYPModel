@@ -31,9 +31,9 @@ def addTimeStampOfUser(imgurl,location,img):
 	ID=imgurl.split("/")
 	#print(imgurl)
 	#print(ID[1])
-	print(ID[1])
+	# print(ID[1])
 	one=collection.find_one({"id":ID[1]})
-	print(one)
+	# print(one)
 	timeStamps=one["timeStamps"]
 	now=datetime.now()
 	#location="lab"
