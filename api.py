@@ -120,10 +120,30 @@ def delete(id):
 		representations = pickle.load(f)
 
 	# Find and remove the instance with the specified save_path
-	for instance in representations:
-		if instance[0] == save_path:
+	# for instance in representations:
+	# 	if instance[0] == save_path:
+	# 		representations.remove(instance)
+	# 		# break
+	# for instance in representations:
+	# 	print(instance[0])
+	# 	ID=instance[0].split("/")[1]
+	# 	if ID == id:
+	# 		print("del: "+instance[0])
+	# 		# representations.remove(instance)
+	# 		print("done")
+
+	representations_copy = representations.copy()  # Create a copy of the list
+
+
+	for instance in representations_copy:
+		# print(instance[0])
+		ID = instance[0].split("/")[1]
+		if ID == id:
+			# print("del: " + instance[0])
 			representations.remove(instance)
-			break
+			# print("done")
+
+			# break
 
 	# Save updated representations
 	with open(os.path.join(db_path, file_name), 'wb') as f:
@@ -478,7 +498,7 @@ def findfaceWrapper(req, trx_id = 0):
 
 
 if __name__ == '__main__':
-	resetMongoDb()
+	# resetMongoDb()
 	parser = argparse.ArgumentParser()
 	parser.add_argument(
 		'-p', '--port',
@@ -490,7 +510,7 @@ if __name__ == '__main__':
 	#app.run(host='0.0.0.0', port=80,debug=False)
 	# app.run(host='0.0.0.0', port=args.port,debug=True,threaded=True)
 	# app.run(host='10.25.28.60', port=5000,debug=False)  #'192.168.0.106' home
-	app.run(host='0.0.0.0', port=args.port,debug=False,threaded=True)
+	app.run(host='0.0.0.0', port=args.port,debug=False,threaded=False)
 	# app.run(host='0.0.0.0', port=args.port,debug=True)
 
 	# app.run( port=args.port,debug=True)
