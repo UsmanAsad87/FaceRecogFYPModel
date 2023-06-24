@@ -1,12 +1,12 @@
 ﻿# FaceRecogFYPModel
  
 
-##Requirements:
+## Requirements:
   MongoDb
   Python	3.10.6 (libraries from install.yml)
   Tensorflow-gpu	2.10
 
-##How to run code
+## How to run code
   After creating the environment from install.yml, activate it using command
 
 mongod
