@@ -26,8 +26,6 @@ API and Website is live at http://172.30.34.67:5000 as shown in snapshot. You ca
 
 ![Picture1](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/2272dba4-d643-4570-a80e-815a4db98f60)
 
-![Picture2](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/8737599e-22be-4063-a960-7cf7a164ff68)
-
 ![Picture3](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/d6b4364a-32a3-45eb-b369-11b70efd4886)
 
 ![Picture4](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/d8724ef7-b84e-4115-b355-204735edddf9)
