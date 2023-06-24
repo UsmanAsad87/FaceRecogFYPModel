@@ -17,22 +17,30 @@ python api.py
 
 The API will be live on some IP and port no kindly note it down.
 
-![img2](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/a9e91cc4-7b1e-405b-85d5-638317667133)
+![img2](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/c8aa333c-a59a-4f9d-bc0d-be09f7548662)
+
 
 API and Website is live at http://172.30.34.67:5000 as shown in snapshot. You can open this URL so the homepage of Website.
 
 ## Snapshots
-![Picture1](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/4cd1c8e9-79e3-4427-b6e0-3c71918047d7)
+
+![Picture1](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/2272dba4-d643-4570-a80e-815a4db98f60)
+
+![Picture2](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/8737599e-22be-4063-a960-7cf7a164ff68)
+
+![Picture3](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/d6b4364a-32a3-45eb-b369-11b70efd4886)
+
+![Picture4](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/d8724ef7-b84e-4115-b355-204735edddf9)
+
+![Picture5](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/73305baf-38ba-4158-959a-1c8c73c3ef08)
+
+![Picture6](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/e31cd319-7e57-448e-b25a-ed5b8c3de827)
 
 
-![Picture3](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/b1aee37b-68ce-4272-8d98-09e392dbcbb8)
-
-![Picture4](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/e84a2cce-b6cd-49c9-bae0-2ac9758c1af6)
-
-![Picture5](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/129b199a-a2f2-49bc-878d-7e85c2ed97e2)
 
 
-![Picture6](https://github.com/UsmanAsad87/FaceRecogFYPModel/assets/92229738/bfbe4861-44ae-4e60-a7f1-5ba87730f3f0)
+
+
 
 
 
